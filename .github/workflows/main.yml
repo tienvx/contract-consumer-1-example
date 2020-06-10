@@ -1,0 +1,38 @@
+name: main
+
+on: [push, pull_request]
+
+jobs:
+  php-cs-fixer:
+    name: PHP CS Fixer
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: PHP CS Fixer
+      uses: docker://oskarstark/php-cs-fixer-ga
+      with:
+        args: --diff --dry-run
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    container:
+      image: php:7.4-cli-alpine
+    steps:
+    - name: Set Up Container
+      run: |
+        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+        composer global require hirak/prestissimo > /dev/null
+
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: Install Dependencies
+      run: composer install
+
+    - name: Test
+      run: |
+        ./vendor/bin/codecept build
+        ./vendor/bin/codecept run
