@@ -11,18 +11,10 @@
         <ini name="error_reporting" value="-1" />
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
-
-        <env name="PACT_MOCK_SERVER_HOST" value="localhost"/>
-        <env name="PACT_MOCK_SERVER_PORT" value="7200"/>
-        <env name="PACT_CONSUMER_NAME" value="ConsumerOneExample"/>
-        <env name="PACT_CONSUMER_VERSION" value="1.0.0"/>
-        <env name="PACT_CONSUMER_TAG" value="master"/>
-        <env name="PACT_PROVIDER_NAME" value="ProviderExample"/>
-        <env name="PACT_OUTPUT_DIR" value="./var/pact"/>
     </php>
 
     <testsuites>
-        <testsuite name="Book Maker Test Suite">
+        <testsuite name="Project Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
@@ -32,16 +24,4 @@
             <directory suffix=".php">src</directory>
         </whitelist>
     </filter>
-
-    <listeners>
-        <listener class="PhpPact\Consumer\Listener\PactTestListener">
-            <arguments>
-                <array>
-                    <element key="0">
-                        <string>Book Maker Test Suite</string>
-                    </element>
-                </array>
-            </arguments>
-        </listener>
-    </listeners>
 </phpunit>

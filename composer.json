@@ -13,8 +13,9 @@
         "symfony/yaml": "5.1.*"
     },
     "require-dev": {
-        "pact-foundation/pact-php": "^5.0",
-        "phpunit/phpunit": "^9.2"
+        "codeception/codeception": "^4.1",
+        "codeception/module-asserts": "^1.2",
+        "pact-foundation/pact-php": "^5.0"
     },
     "config": {
         "optimize-autoloader": true,

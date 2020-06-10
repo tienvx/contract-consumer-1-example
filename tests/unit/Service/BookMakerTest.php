@@ -21,7 +21,7 @@ class BookMakerTest extends TestCase
         $request
             ->setMethod('GET')
             ->setPath('/api/books?page=1')
-            ->addHeader('Content-Type', 'application/json');
+            /*->addHeader('Content-Type', 'application/json')*/;
 
         $matcher = new Matcher();
 
@@ -49,7 +49,7 @@ class BookMakerTest extends TestCase
                 '@type' => 'hydra:Collection',
                 'hydra:member' => $matcher->eachLike($book),
                 'hydra:totalItems' => $matcher->like(20),
-                'hydra:search' => file_get_contents(__DIR__.'/data/search.json')
+                'hydra:search' => file_get_contents(codecept_data_dir('hydra-search.json'))
             ]);
 
 
