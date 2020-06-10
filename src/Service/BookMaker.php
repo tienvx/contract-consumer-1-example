@@ -51,7 +51,9 @@ class BookMaker
 
     protected function countBooks(): int
     {
-        $response = $this->client->request('GET', "{$this->baseUrl}/api/books?page=1");
+        $response = $this->client->request('GET', "{$this->baseUrl}/api/books?page=1", [
+            'headers' => ['Content-Type' => 'application/ld+json'],
+        ]);
         return $response->toArray()['hydra:totalItems'];
     }
 }
