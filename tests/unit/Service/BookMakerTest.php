@@ -3,13 +3,11 @@
 namespace App\Tests\unit\Service;
 
 use App\Service\BookMaker;
-use App\Tests\UnitTester;
 use PhpPact\Consumer\InteractionBuilder;
 use PhpPact\Consumer\Model\ConsumerRequest;
 use PhpPact\Consumer\Model\ProviderResponse;
 use PhpPact\Consumer\Matcher\Matcher;
 use PhpPact\Standalone\MockService\MockServerEnvConfig;
-use PhpPact\Standalone\MockService\Service\MockServerHttpService;
 use PHPUnit\Framework\TestCase;
 
 class BookMakerTest extends TestCase
@@ -63,6 +61,29 @@ class BookMakerTest extends TestCase
             ->with($request)
             ->willRespondWith($response);
 
+        // build the request
+        $request = new ConsumerRequest();
+        $request
+            ->setMethod('POST')
+            ->setPath('/api/books')
+            ->addHeader('Content-Type', 'application/json')
+            ->setBody([
+                'isbn' => '0099740915',
+                'title' => 'The Handmaid\'s Tale',
+                'description' => 'Brilliantly conceived and executed, this powerful evocation of twenty-first century America gives full rein to Margaret Atwood\'s devastating irony, wit and astute perception.',
+                'author' => 'Margaret Atwood',
+                'publicationDate' => '1985-07-31T00:00:00+00:00',
+            ]);
+
+        $response = new ProviderResponse();
+        $response
+            ->setStatus(201)
+            ->addHeader('Content-Type', 'application/ld+json; charset=utf-8');
+
+        $mockService->given('Books Provider')
+            ->uponReceiving('A GET request to return JSON')
+            ->with($request)
+            ->willRespondWith($response);
 
         $service = new BookMaker($config->getBaseUri()); // Pass in the URL to the Mock Server.
         $result = $service->createBook();
