@@ -2,59 +2,46 @@
 namespace App\Tests\Extension;
 
 use Codeception\Event\SuiteEvent;
-use Codeception\Event\TestEvent;
 use Codeception\Events;
 use Codeception\Extension;
-use Codeception\Test\Descriptor;
 use GuzzleHttp\Psr7\Uri;
 use PhpPact\Broker\Service\BrokerHttpClient;
 use PhpPact\Http\GuzzleClient;
 use PhpPact\Standalone\MockService\MockServer;
-use PhpPact\Standalone\MockService\MockServerConfigInterface;
 use PhpPact\Standalone\MockService\MockServerEnvConfig;
 use PhpPact\Standalone\MockService\Service\MockServerHttpService;
 
 class Pact extends Extension
 {
-    protected $config = ['suite' => 'unit'];
+    protected $config = ['suites' => []];
 
     /**
      * @var MockServer
      */
     protected MockServer $server;
 
-    /**
-     * @var MockServerConfigInterface
-     */
-    protected MockServerConfigInterface $mockServerConfig;
+    public static $events = [
+        Events::SUITE_INIT => [
+            ['initSuite', -1]
+        ],
+        Events::SUITE_AFTER  => 'afterSuite',
+    ];
 
-    public function __construct($config, $options)
+    public function initSuite(SuiteEvent $e)
     {
-        parent::__construct($config, $options);
-        $this->mockServerConfig = new MockServerEnvConfig();
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return [
-            Events::SUITE_BEFORE => 'beforeSuite',
-            Events::SUITE_AFTER  => 'afterSuite',
-        ];
-    }
-
-    public function beforeSuite(SuiteEvent $e)
-    {
-        if ($this->config['suite'] === $e->getSuite()->getName()) {
-            $this->server = new MockServer($this->mockServerConfig);
+        if (in_array($e->getSuite()->getName(), $this->config['suites'])) {
+            $mockServerConfig = new MockServerEnvConfig();
+            $this->server = new MockServer($mockServerConfig);
             $this->server->start();
         }
     }
 
     public function afterSuite(SuiteEvent $e)
     {
-        if ($this->config['suite'] === $e->getSuite()->getName()) {
+        if (in_array($e->getSuite()->getName(), $this->config['suites'])) {
+            $mockServerConfig = new MockServerEnvConfig();
             try {
-                $httpService = new MockServerHttpService(new GuzzleClient(), $this->mockServerConfig);
+                $httpService = new MockServerHttpService(new GuzzleClient(), $mockServerConfig);
                 $httpService->verifyInteractions();
 
                 $json = $httpService->getPactJson();
@@ -92,7 +79,7 @@ class Pact extends Extension
                 $client = new GuzzleClient($clientConfig);
 
                 $brokerHttpService = new BrokerHttpClient($client, new Uri($pactBrokerUri), $headers);
-                $brokerHttpService->tag($this->mockServerConfig->getConsumer(), $consumerVersion, $tag);
+                $brokerHttpService->tag($mockServerConfig->getConsumer(), $consumerVersion, $tag);
                 $brokerHttpService->publishJson($json, $consumerVersion);
                 print 'Pact file has been uploaded to the Broker successfully.';
             }

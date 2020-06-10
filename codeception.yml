@@ -9,7 +9,8 @@ actor_suffix: Tester
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
-        - App\Tests\Extension\Pact
+        - App\Tests\Extension\Pact:
+            suites:
+                - App\Tests.unit
 params:
     - .env
-    - .env.pact
