@@ -27,7 +27,7 @@ class BookMaker
         $before = $this->countBooks();
         $response = $this->client->request('POST', "{$this->baseUrl}/api/books", [
             'headers' => ['Content-Type' => 'application/json'],
-            'body' => [
+            'json' => [
                 'isbn' => '0099740915',
                 'title' => 'The Handmaid\'s Tale',
                 'description' => 'Brilliantly conceived and executed, this powerful evocation of twenty-first century America gives full rein to Margaret Atwood\'s devastating irony, wit and astute perception.',

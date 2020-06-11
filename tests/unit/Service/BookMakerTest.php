@@ -68,11 +68,11 @@ class BookMakerTest extends TestCase
             ->setPath('/api/books')
             ->addHeader('Content-Type', 'application/json')
             ->setBody([
-                'isbn' => '0099740915',
-                'title' => 'The Handmaid\'s Tale',
-                'description' => 'Brilliantly conceived and executed, this powerful evocation of twenty-first century America gives full rein to Margaret Atwood\'s devastating irony, wit and astute perception.',
-                'author' => 'Margaret Atwood',
-                'publicationDate' => '1985-07-31T00:00:00+00:00',
+                'isbn' => $matcher->like('0099740915'),
+                'title' => $matcher->like("The Handmaid's Tale"),
+                'description' => $matcher->like('Brilliantly conceived and executed, this powerful evocation of twenty-first century America gives full rein to Margaret Atwood\'s devastating irony, wit and astute perception.'),
+                'author' => $matcher->like('Margaret Atwood'),
+                'publicationDate' => $matcher->like('1985-07-31T00:00:00+00:00'),
             ]);
 
         $response = new ProviderResponse();
@@ -81,7 +81,7 @@ class BookMakerTest extends TestCase
             ->addHeader('Content-Type', 'application/ld+json; charset=utf-8');
 
         $mockService->given('Books Provider')
-            ->uponReceiving('A GET request to return JSON')
+            ->uponReceiving('A POST request to return JSON')
             ->with($request)
             ->willRespondWith($response);
 
