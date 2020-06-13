@@ -24,7 +24,6 @@ class BookMaker
 
     public function createBook(): bool
     {
-        $before = $this->countBooks();
         $response = $this->client->request('POST', "{$this->baseUrl}/api/books", [
             'headers' => ['Content-Type' => 'application/json'],
             'json' => [
@@ -37,16 +36,17 @@ class BookMaker
         ]);
 
         if ($response->getStatusCode() == 201) {
-            $after = $this->countBooks();
-
-            if ($after === $before + 1) {
-                // Success
-                return true;
-            }
+            return $this->countBooks() > 0;
         }
 
         // Failure
         return false;
+    }
+
+    public function generateCover(string $id): bool
+    {
+        $response = $this->client->request('PUT', "{$this->baseUrl}/books/{$id}/generate-cover");
+        return $response->getStatusCode() === 200;
     }
 
     protected function countBooks(): int

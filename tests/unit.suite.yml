@@ -3,8 +3,12 @@
 # Suite for unit or integration tests.
 
 actor: UnitTester
+extensions:
+    enabled:
+        - App\Tests\Extension\Pact:
+            PACT_CONSUMER_NAME: BookPublisher
+            PACT_PROVIDER_NAME: BookStore
 modules:
     enabled:
         - Asserts
         - \App\Tests\Helper\Unit
-bootstrap: bootstrap.php
