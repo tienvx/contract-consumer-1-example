@@ -11,9 +11,6 @@ class BookMaker
      */
     private $client;
 
-    /**
-     * @var string
-     */
     private string $baseUrl;
 
     public function __construct($baseUrl)
@@ -35,7 +32,7 @@ class BookMaker
             ],
         ]);
 
-        if ($response->getStatusCode() == 201) {
+        if (201 == $response->getStatusCode()) {
             return $this->countBooks() > 0;
         }
 
@@ -46,7 +43,8 @@ class BookMaker
     public function generateCover(string $id): bool
     {
         $response = $this->client->request('PUT', "{$this->baseUrl}/books/{$id}/generate-cover");
-        return $response->getStatusCode() === 200;
+
+        return 200 === $response->getStatusCode();
     }
 
     protected function countBooks(): int
@@ -54,6 +52,7 @@ class BookMaker
         $response = $this->client->request('GET', "{$this->baseUrl}/api/books?page=1", [
             'headers' => ['Content-Type' => 'application/ld+json'],
         ]);
+
         return $response->toArray()['hydra:totalItems'];
     }
 }
