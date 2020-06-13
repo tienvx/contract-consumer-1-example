@@ -42,3 +42,8 @@ jobs:
       run: |
         ./vendor/bin/codecept build
         ./vendor/bin/codecept run
+      env:
+        PACT_BROKER_URI: ${{ secrets.PACT_BROKER_URI }}
+        PACT_CONSUMER_TAG: ${{ secrets.PACT_CONSUMER_TAG }}
+        PACT_CONSUMER_VERSION: ${{ secrets.PACT_CONSUMER_VERSION }}
+        PACT_BROKER_BEARER_TOKEN: ${{ secrets.PACT_BROKER_BEARER_TOKEN }}

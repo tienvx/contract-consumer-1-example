@@ -54,6 +54,19 @@ class BookMakerCest
         $I->verifyPacts($this->mockService);
     }
 
+    public function testGenerateCover(UnitTester $I)
+    {
+        $id = '1b45e925-318a-4e8b-a53b-e5fe37a6454d';
+        $this->setUpGeneratingCover($id);
+
+        $service = new BookMaker($this->config->getBaseUri());
+        $result = $service->generateCover($id);
+
+        $I->assertTrue($result, "Let's make sure we generated cover");
+
+        $I->verifyPacts($this->mockService);
+    }
+
     protected function setUpGetBooks(): void
     {
         // build the request
@@ -108,6 +121,28 @@ class BookMakerCest
 
         $this->mockService->given('Book Fixtures Loaded')
             ->uponReceiving('A POST request to create book')
+            ->with($request)
+            ->willRespondWith($response);
+    }
+
+    protected function setUpGeneratingCover(string $id): void
+    {
+        // build the request
+        $request = new ConsumerRequest();
+        $request
+            ->setMethod('PUT')
+            ->setPath("/api/books/{$id}/generate-cover")
+            ->addHeader('Content-Type', 'application/json')
+            ->setBody([]);
+
+        // build the response
+        $response = new ProviderResponse();
+        $response
+            ->setStatus(204)
+            ->addHeader('Content-Type', 'application/ld+json; charset=utf-8');
+
+        $this->mockService->given('Book Fixtures Loaded')
+            ->uponReceiving('A PUT request to generate book cover')
             ->with($request)
             ->willRespondWith($response);
     }
