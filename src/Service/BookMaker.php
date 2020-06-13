@@ -42,9 +42,12 @@ class BookMaker
 
     public function generateCover(string $id): bool
     {
-        $response = $this->client->request('PUT', "{$this->baseUrl}/books/{$id}/generate-cover");
+        $response = $this->client->request('PUT', "{$this->baseUrl}/api/books/{$id}/generate-cover", [
+            'headers' => ['Content-Type' => 'application/json'],
+            'json' => [],
+        ]);
 
-        return 200 === $response->getStatusCode();
+        return 204 === $response->getStatusCode();
     }
 
     protected function countBooks(): int
