@@ -44,7 +44,6 @@ class Pact extends Extension
 
     public function initSuite(SuiteEvent $e)
     {
-        dump($this->config);
         foreach ($this->config as $key => $value) {
             putenv("$key=$value");
         }
