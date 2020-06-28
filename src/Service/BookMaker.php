@@ -33,29 +33,20 @@ class BookMaker
         ]);
 
         if (201 == $response->getStatusCode()) {
-            return $this->countBooks() > 0;
+            return $this->generateCover($response->toArray()['@id']);
         }
 
         // Failure
         return false;
     }
 
-    public function generateCover(string $id): bool
+    protected function generateCover(string $iri): bool
     {
-        $response = $this->client->request('PUT', "{$this->baseUrl}/api/books/{$id}/generate-cover", [
+        $response = $this->client->request('PUT', "{$this->baseUrl}/{$iri}/generate-cover", [
             'headers' => ['Content-Type' => 'application/json'],
             'json' => [],
         ]);
 
         return 204 === $response->getStatusCode();
-    }
-
-    protected function countBooks(): int
-    {
-        $response = $this->client->request('GET', "{$this->baseUrl}/api/books?page=1", [
-            'headers' => ['Content-Type' => 'application/ld+json'],
-        ]);
-
-        return $response->toArray()['hydra:totalItems'];
     }
 }

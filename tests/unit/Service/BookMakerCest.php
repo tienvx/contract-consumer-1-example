@@ -16,6 +16,7 @@ class BookMakerCest
     protected MockServerEnvConfig $config;
     protected InteractionBuilder $mockService;
     protected object $book;
+    protected string $iri;
 
     public function _before(UnitTester $I)
     {
@@ -25,12 +26,14 @@ class BookMakerCest
         $this->matcher = new Matcher();
 
         $review = new \stdClass();
-        $review->{'@id'} = $this->matcher->term('/api/books/0114b2a8-3347-49d8-ad99-0e792c5a30e6', '\/api\/books\/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}');
+        $review->{'@id'} = $this->matcher->term('/api/reviews/fb5a885f-f7e8-4a50-950f-c1a64a94d500', '\/api\/reviews\/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}');
         $review->{'@type'} = 'http://schema.org/Review';
-        $review->body = 'Necessitatibus eius commodi odio ut aliquid. Sit enim molestias in minus aliquid repudiandae qui. Distinctio modi officiis eos suscipit. Vel ut modi quia recusandae qui eligendi. Voluptas totam asperiores ab tenetur voluptatem repudiandae reiciendis.';
+        $review->body = $this->matcher->like('Necessitatibus eius commodi odio ut aliquid. Sit enim molestias in minus aliquid repudiandae qui. Distinctio modi officiis eos suscipit. Vel ut modi quia recusandae qui eligendi. Voluptas totam asperiores ab tenetur voluptatem repudiandae reiciendis.');
+
+        $this->iri = '/api/books/0114b2a8-3347-49d8-ad99-0e792c5a30e6';
 
         $book = new \stdClass();
-        $book->{'@id'} = $this->matcher->term('/api/books/0114b2a8-3347-49d8-ad99-0e792c5a30e6', '\/api\/books\/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}');
+        $book->{'@id'} = $this->matcher->term($this->iri, '\/api\/books\/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}');
         $book->{'@type'} = 'Book';
         $book->title = $this->matcher->like('Voluptas et tempora repellat corporis excepturi.');
         $book->description = $this->matcher->like('Quaerat odit quia nisi accusantium natus voluptatem. Explicabo corporis eligendi ut ut sapiente ut qui quidem. Optio amet velit aut delectus. Sed alias asperiores perspiciatis deserunt omnis. Mollitia unde id in.');
@@ -43,8 +46,8 @@ class BookMakerCest
 
     public function testCreateBook(UnitTester $I)
     {
-        $this->setUpGetBooks();
         $this->setUpCreatingBook();
+        $this->setUpGeneratingCover($this->iri);
 
         $service = new BookMaker($this->config->getBaseUri());
         $result = $service->createBook();
@@ -52,49 +55,6 @@ class BookMakerCest
         $I->assertTrue($result, "Let's make sure we created a book");
 
         $I->verifyPacts($this->mockService);
-    }
-
-    public function testGenerateCover(UnitTester $I)
-    {
-        $id = '1b45e925-318a-4e8b-a53b-e5fe37a6454d';
-        $this->setUpGeneratingCover($id);
-
-        $service = new BookMaker($this->config->getBaseUri());
-        $result = $service->generateCover($id);
-
-        $I->assertTrue($result, "Let's make sure we generated cover");
-
-        $I->verifyPacts($this->mockService);
-    }
-
-    protected function setUpGetBooks(): void
-    {
-        // build the request
-        $request = new ConsumerRequest();
-        $request
-            ->setMethod('GET')
-            ->setPath('/api/books')
-            ->setQuery('page=1')
-            ->addHeader('Content-Type', 'application/ld+json');
-
-        // build the response
-        $response = new ProviderResponse();
-        $response
-            ->setStatus(200)
-            ->addHeader('Content-Type', 'application/ld+json; charset=utf-8')
-            ->setBody([
-                '@context' => '/api/contexts/Book',
-                '@id' => '/api/books',
-                '@type' => 'hydra:Collection',
-                'hydra:member' => $this->matcher->eachLike($this->book),
-                'hydra:totalItems' => $this->matcher->like(20),
-                'hydra:search' => json_decode(file_get_contents(codecept_data_dir('hydra-search.json')), true)
-            ]);
-
-        $this->mockService->given('Book Fixtures Loaded')
-            ->uponReceiving('A GET request to get books')
-            ->with($request)
-            ->willRespondWith($response);
     }
 
     protected function setUpCreatingBook(): void
@@ -117,7 +77,10 @@ class BookMakerCest
         $response = new ProviderResponse();
         $response
             ->setStatus(201)
-            ->addHeader('Content-Type', 'application/ld+json; charset=utf-8');
+            ->addHeader('Content-Type', 'application/ld+json; charset=utf-8')
+            ->setBody([
+                '@context' => '/api/contexts/Book',
+            ] + (array) $this->book);
 
         $this->mockService->given('Book Fixtures Loaded')
             ->uponReceiving('A POST request to create book')
@@ -125,13 +88,13 @@ class BookMakerCest
             ->willRespondWith($response);
     }
 
-    protected function setUpGeneratingCover(string $id): void
+    protected function setUpGeneratingCover(string $iri): void
     {
         // build the request
         $request = new ConsumerRequest();
         $request
             ->setMethod('PUT')
-            ->setPath("/api/books/{$id}/generate-cover")
+            ->setPath("{$iri}/generate-cover")
             ->addHeader('Content-Type', 'application/json')
             ->setBody([]);
 
