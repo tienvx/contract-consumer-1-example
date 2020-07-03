@@ -13,9 +13,7 @@
         "symfony/yaml": "5.1.*"
     },
     "require-dev": {
-        "codeception/codeception": "^4.1",
         "codeception/module-asserts": "^1.2",
-        "pact-foundation/pact-php": "^5.0",
         "tienvx/codeception-pact-module": "^1.0"
     },
     "config": {
