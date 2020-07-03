@@ -5,7 +5,7 @@
 actor: UnitTester
 extensions:
     enabled:
-        - App\Tests\Extension\Pact:
+        - CodeceptionPact\Extension\PhpPact:
             PACT_CONSUMER_NAME: BookPublisher
             PACT_PROVIDER_NAME: BookStore
 modules:

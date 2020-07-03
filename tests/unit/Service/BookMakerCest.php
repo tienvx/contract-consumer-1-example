@@ -54,7 +54,7 @@ class BookMakerCest
 
         $I->assertTrue($result, "Let's make sure we created a book");
 
-        $I->verifyPacts($this->mockService);
+        $this->mockService->verify();
     }
 
     protected function setUpCreatingBook(): void
