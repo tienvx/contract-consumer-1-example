@@ -14,14 +14,14 @@ class BookMakerCest
 {
     protected Matcher $matcher;
     protected MockServerEnvConfig $config;
-    protected InteractionBuilder $mockService;
+    protected InteractionBuilder $builder;
     protected object $book;
-    protected string $iri;
+    protected string $bookIri;
 
     public function _before(UnitTester $I)
     {
         $this->config = new MockServerEnvConfig();
-        $this->mockService = new InteractionBuilder($this->config);
+        $this->builder = new InteractionBuilder($this->config);
 
         $this->matcher = new Matcher();
 
@@ -30,10 +30,10 @@ class BookMakerCest
         $review->{'@type'} = 'http://schema.org/Review';
         $review->body = $this->matcher->like('Necessitatibus eius commodi odio ut aliquid. Sit enim molestias in minus aliquid repudiandae qui. Distinctio modi officiis eos suscipit. Vel ut modi quia recusandae qui eligendi. Voluptas totam asperiores ab tenetur voluptatem repudiandae reiciendis.');
 
-        $this->iri = '/api/books/0114b2a8-3347-49d8-ad99-0e792c5a30e6';
+        $this->bookIri = '/api/books/0114b2a8-3347-49d8-ad99-0e792c5a30e6';
 
         $book = new \stdClass();
-        $book->{'@id'} = $this->matcher->term($this->iri, '\/api\/books\/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}');
+        $book->{'@id'} = $this->matcher->term($this->bookIri, '\/api\/books\/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}');
         $book->{'@type'} = 'Book';
         $book->title = $this->matcher->like('Voluptas et tempora repellat corporis excepturi.');
         $book->description = $this->matcher->like('Quaerat odit quia nisi accusantium natus voluptatem. Explicabo corporis eligendi ut ut sapiente ut qui quidem. Optio amet velit aut delectus. Sed alias asperiores perspiciatis deserunt omnis. Mollitia unde id in.');
@@ -47,14 +47,15 @@ class BookMakerCest
     public function testCreateBook(UnitTester $I)
     {
         $this->setUpCreatingBook();
-        $this->setUpGeneratingCover($this->iri);
+        $this->setUpGeneratingCover();
 
-        $service = new BookMaker($this->config->getBaseUri());
+        $service = new BookMaker();
+        $service->setBaseUrl($this->config->getBaseUri());
+
         $result = $service->createBook();
-
         $I->assertTrue($result, "Let's make sure we created a book");
 
-        $this->mockService->verify();
+        $this->builder->verify();
     }
 
     protected function setUpCreatingBook(): void
@@ -82,19 +83,19 @@ class BookMakerCest
                 '@context' => '/api/contexts/Book',
             ] + (array) $this->book);
 
-        $this->mockService->given('Book Fixtures Loaded')
+        $this->builder->given('Book Fixtures Loaded')
             ->uponReceiving('A POST request to create book')
             ->with($request)
             ->willRespondWith($response);
     }
 
-    protected function setUpGeneratingCover(string $iri): void
+    protected function setUpGeneratingCover(): void
     {
         // build the request
         $request = new ConsumerRequest();
         $request
             ->setMethod('PUT')
-            ->setPath("{$iri}/generate-cover")
+            ->setPath("{$this->bookIri}/generate-cover")
             ->addHeader('Content-Type', 'application/json')
             ->setBody([]);
 
@@ -104,7 +105,7 @@ class BookMakerCest
             ->setStatus(204)
             ->addHeader('Content-Type', 'application/ld+json; charset=utf-8');
 
-        $this->mockService->given('Book Fixtures Loaded')
+        $this->builder->given('Book Fixtures Loaded')
             ->uponReceiving('A PUT request to generate book cover')
             ->with($request)
             ->willRespondWith($response);
