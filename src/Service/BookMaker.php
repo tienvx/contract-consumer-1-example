@@ -11,11 +11,18 @@ class BookMaker
      */
     private $client;
 
-    private string $baseUrl;
+    /**
+     * @var string
+     */
+    private $baseUrl;
 
-    public function __construct($baseUrl)
+    public function __construct()
     {
         $this->client = HttpClient::create();
+    }
+
+    public function setBaseUrl(string $baseUrl)
+    {
         $this->baseUrl = $baseUrl;
     }
 
