@@ -5,9 +5,10 @@
 actor: UnitTester
 extensions:
     enabled:
-        - CodeceptionPact\Extension\PhpPact:
+        - CodeceptionPactPhp\Extension\Env:
             PACT_CONSUMER_NAME: BookPublisher
             PACT_PROVIDER_NAME: BookStore
+        - CodeceptionPactPhp\Extension\Pact
 modules:
     enabled:
         - Asserts
