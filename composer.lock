@@ -6371,16 +6371,16 @@
         },
         {
             "name": "tienvx/codeception-pact-php-extension",
-            "version": "v1.0.0",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tienvx/codeception-pact-php-extension.git",
-                "reference": "77cd92288cad6ebcbe5e776c8664da91adf15bbf"
+                "reference": "4e729685fc963375bce41c4d1785a8c8582b7fe5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tienvx/codeception-pact-php-extension/zipball/77cd92288cad6ebcbe5e776c8664da91adf15bbf",
-                "reference": "77cd92288cad6ebcbe5e776c8664da91adf15bbf",
+                "url": "https://api.github.com/repos/tienvx/codeception-pact-php-extension/zipball/4e729685fc963375bce41c4d1785a8c8582b7fe5",
+                "reference": "4e729685fc963375bce41c4d1785a8c8582b7fe5",
                 "shasum": ""
             },
             "require": {
@@ -6418,7 +6418,7 @@
                 "pact",
                 "pact-php"
             ],
-            "time": "2020-07-08T17:34:44+00:00"
+            "time": "2020-07-10T00:49:46+00:00"
         },
         {
             "name": "webmozart/assert",
