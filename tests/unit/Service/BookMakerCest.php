@@ -97,8 +97,7 @@ class BookMakerCest
         // build the response
         $response = new ProviderResponse();
         $response
-            ->setStatus(204)
-            ->addHeader('Content-Type', 'application/ld+json; charset=utf-8');
+            ->setStatus(204);
 
         $this->builder->given('Book Fixtures Loaded')
             ->uponReceiving('A PUT request to generate book cover')
