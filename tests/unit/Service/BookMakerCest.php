@@ -29,7 +29,7 @@ class BookMakerCest
 
         $this->book = [
             '@context' => '/api/contexts/Book',
-            '@id' => $this->matcher->term($this->bookIri, '\/api\/books\/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}'),
+            '@id' => $this->matcher->term($this->bookIri, '^\\/api\\/books\\/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$'),
             '@type' => 'Book',
             'title' => $this->matcher->like('Voluptas et tempora repellat corporis excepturi.'),
             'description' => $this->matcher->like('Quaerat odit quia nisi accusantium natus voluptatem. Explicabo corporis eligendi ut ut sapiente ut qui quidem. Optio amet velit aut delectus. Sed alias asperiores perspiciatis deserunt omnis. Mollitia unde id in.'),
