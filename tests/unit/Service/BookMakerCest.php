@@ -15,7 +15,7 @@ class BookMakerCest
     protected Matcher $matcher;
     protected MockServerEnvConfig $config;
     protected InteractionBuilder $builder;
-    protected object $book;
+    protected array $book;
     protected string $bookIri;
 
     public function _before(UnitTester $I)
@@ -27,16 +27,16 @@ class BookMakerCest
 
         $this->bookIri = '/api/books/0114b2a8-3347-49d8-ad99-0e792c5a30e6';
 
-        $book = new \stdClass();
-        $book->{'@id'} = $this->matcher->term($this->bookIri, '\/api\/books\/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}');
-        $book->{'@type'} = 'Book';
-        $book->title = $this->matcher->like('Voluptas et tempora repellat corporis excepturi.');
-        $book->description = $this->matcher->like('Quaerat odit quia nisi accusantium natus voluptatem. Explicabo corporis eligendi ut ut sapiente ut qui quidem. Optio amet velit aut delectus. Sed alias asperiores perspiciatis deserunt omnis. Mollitia unde id in.');
-        $book->author = $this->matcher->like('Melisa Kassulke');
-        $book->publicationDate = $this->matcher->dateTimeISO8601('1999-02-13T00:00:00+07:00');
-        $book->reviews = [];
-
-        $this->book = $book;
+        $this->book = [
+            '@context' => '/api/contexts/Book',
+            '@id' => $this->matcher->term($this->bookIri, '\/api\/books\/[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}'),
+            '@type' => 'Book',
+            'title' => $this->matcher->like('Voluptas et tempora repellat corporis excepturi.'),
+            'description' => $this->matcher->like('Quaerat odit quia nisi accusantium natus voluptatem. Explicabo corporis eligendi ut ut sapiente ut qui quidem. Optio amet velit aut delectus. Sed alias asperiores perspiciatis deserunt omnis. Mollitia unde id in.'),
+            'author' => $this->matcher->like('Melisa Kassulke'),
+            'publicationDate' => $this->matcher->dateTimeISO8601('1999-02-13T00:00:00+07:00'),
+            'reviews' => [],
+        ];
     }
 
     public function testCreateBook(UnitTester $I)
@@ -74,9 +74,7 @@ class BookMakerCest
         $response
             ->setStatus(201)
             ->addHeader('Content-Type', 'application/ld+json; charset=utf-8')
-            ->setBody([
-                '@context' => '/api/contexts/Book',
-            ] + (array) $this->book);
+            ->setBody($this->book);
 
         $this->builder->given('Book Fixtures Loaded')
             ->uponReceiving('A POST request to create book')
