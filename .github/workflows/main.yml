@@ -3,40 +3,29 @@ name: main
 on: [push, pull_request]
 
 jobs:
-  php-cs-fixer:
-    name: PHP CS Fixer
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@master
-
-    - name: PHP CS Fixer
-      uses: docker://oskarstark/php-cs-fixer-ga
-      with:
-        args: --diff --dry-run
-
   test:
-    name: Test
     runs-on: ubuntu-latest
-    container:
-      image: php:7.4-cli-alpine
+    strategy:
+      matrix:
+        php-versions: ['7.4']
+    name: PHP ${{ matrix.php-versions }}
     steps:
-    - name: Set Up Container
-      run: |
-        # https://docs.pact.io/docker#reference-image
-        apk add --no-cache --virtual build-dependencies build-base
-        apk --no-cache add ca-certificates wget bash \
-          && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
-          && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-2.29-r0.apk \
-          && apk add glibc-2.29-r0.apk
-        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
-        composer global require hirak/prestissimo > /dev/null
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        coverage: pcov
+        tools: php-cs-fixer, composer:v2
+        #extensions: mbstring, intl
 
     - name: Checkout
-      uses: actions/checkout@master
+      uses: actions/checkout@v2
 
-    - name: Install Dependencies
+    - name: Install
       run: composer install
+
+    - name: Run PHP CS Fixer
+      run: php-cs-fixer fix --diff --dry-run
 
     - name: Test
       run: |
