@@ -7,14 +7,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class BookMaker
 {
-    /**
-     * @var HttpClientInterface
-     */
     private HttpClientInterface $client;
-
-    /**
-     * @var string
-     */
     private string $baseUrl;
 
     public function __construct()
