@@ -37,13 +37,12 @@ class BookMakerCest
             'publicationDate' => $this->matcher->dateTimeISO8601('1999-02-13T00:00:00+07:00'),
             'reviews' => [],
         ];
+
+        $this->setUpCreatingBook();
     }
 
     public function testCreateBook(UnitTester $I)
     {
-        $this->setUpCreatingBook();
-        $this->setUpGeneratingCover();
-
         $service = new BookMaker();
         $service->setBaseUrl($this->config->getBaseUri());
 
@@ -78,27 +77,6 @@ class BookMakerCest
 
         $this->builder->given('Book Fixtures Loaded')
             ->uponReceiving('A POST request to create book')
-            ->with($request)
-            ->willRespondWith($response);
-    }
-
-    protected function setUpGeneratingCover(): void
-    {
-        // build the request
-        $request = new ConsumerRequest();
-        $request
-            ->setMethod('PUT')
-            ->setPath("{$this->bookIri}/generate-cover")
-            ->addHeader('Content-Type', 'application/json')
-            ->setBody([]);
-
-        // build the response
-        $response = new ProviderResponse();
-        $response
-            ->setStatus(204);
-
-        $this->builder->given('Book Fixtures Loaded')
-            ->uponReceiving('A PUT request to generate book cover')
             ->with($request)
             ->willRespondWith($response);
     }
