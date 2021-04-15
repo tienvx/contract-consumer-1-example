@@ -3,18 +3,19 @@
 namespace App\Service;
 
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class BookMaker
 {
     /**
-     * @var HttpClient
+     * @var HttpClientInterface
      */
-    private $client;
+    private HttpClientInterface $client;
 
     /**
      * @var string
      */
-    private $baseUrl;
+    private string $baseUrl;
 
     public function __construct()
     {
