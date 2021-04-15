@@ -33,21 +33,6 @@ class BookMaker
             ],
         ]);
 
-        if (201 == $response->getStatusCode()) {
-            return $this->generateCover($response->toArray()['@id']);
-        }
-
-        // Failure
-        return false;
-    }
-
-    protected function generateCover(string $iri): bool
-    {
-        $response = $this->client->request('PUT', "{$this->baseUrl}/{$iri}/generate-cover", [
-            'headers' => ['Content-Type' => 'application/json'],
-            'json' => [],
-        ]);
-
-        return 204 === $response->getStatusCode();
+        return 201 == $response->getStatusCode();
     }
 }
