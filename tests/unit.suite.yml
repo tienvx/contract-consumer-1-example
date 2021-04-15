@@ -6,8 +6,8 @@ actor: UnitTester
 extensions:
     enabled:
         - CodeceptionPactPhp\Extension\Env:
-            PACT_CONSUMER_NAME: BookPublisher
-            PACT_PROVIDER_NAME: BookStore
+            PACT_CONSUMER_NAME: Consumer-1
+            PACT_PROVIDER_NAME: Provider
             #PACT_SPECIFICATION_VERSION: 3.0.0
         - CodeceptionPactPhp\Extension\Pact
 modules:
